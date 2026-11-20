@@ -1,0 +1,38 @@
+set(root "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}")
+set(plugins "@BRAILLE_QT_PLUGINS@")
+set(runtime "@sender_qt_libdir@")
+set(bundle_plugins)
+foreach(plugin IN ITEMS platforms/libqxcb.so platforms/libqoffscreen.so platformthemes/libqgtk3.so)
+    if(EXISTS "${plugins}/${plugin}")
+        get_filename_component(folder "${plugin}" DIRECTORY)
+        file(INSTALL "${plugins}/${plugin}" DESTINATION "${root}/plugins/${folder}")
+        list(APPEND bundle_plugins "${root}/plugins/${plugin}")
+    endif()
+endforeach()
+if(NOT EXISTS "${root}/plugins/platforms/libqxcb.so")
+    message(FATAL_ERROR "The Qt distribution needs the xcb platform plugin. Set BRAILLE_QT_PLUGINS.")
+endif()
+
+# Follow the loaded ELF dependencies to include the Qt modules used by the
+# executable and platform plugins, plus the libb2 dependency of distro Qt.
+file(GET_RUNTIME_DEPENDENCIES
+    EXECUTABLES "${root}/Open Braille Sender"
+    LIBRARIES ${bundle_plugins}
+    DIRECTORIES "${runtime}"
+    RESOLVED_DEPENDENCIES_VAR linked
+    UNRESOLVED_DEPENDENCIES_VAR missing)
+if(missing)
+    message(FATAL_ERROR "Unresolved sender dependencies: ${missing}")
+endif()
+file(MAKE_DIRECTORY "${root}/lib")
+set(system_libraries "")
+foreach(library IN LISTS linked)
+    get_filename_component(soname "${library}" NAME)
+    if(soname MATCHES "^lib(Qt6|b2)")
+        # Install an ordinary file under the SONAME, including symlinked Qt libs.
+        file(COPY_FILE "${library}" "${root}/lib/${soname}" ONLY_IF_DIFFERENT)
+    else()
+        string(APPEND system_libraries "${soname}\n")
+    endif()
+endforeach()
+file(WRITE "${root}/system-libraries.txt" "${system_libraries}")

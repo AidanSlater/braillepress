@@ -1,0 +1,24 @@
+# Local dotfiles and directories.
+.*
+!.dockerignore
+!.gitattributes
+!.gitignore
+build
+dist
+output
+braille-jobs
+music-review
+jobs
+ipp-spool
+queue.state
+queue.state.new
+/*.pdf
+/*.brl
+/*.pgm
+/imported*.txt
+*.log
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db

@@ -1,0 +1,41 @@
+FROM debian:trixie-slim@sha256:62bd423aeee912639ca8ee681c2b762cb3e25137e0a92b20be455898a9f034ad AS build
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential ca-certificates cmake patch pkg-config \
+    libavahi-client-dev libcups2-dev libgnutls28-dev \
+    libcpp-httplib-dev libssl-dev nlohmann-json3-dev \
+    liblouis-dev libicu-dev libxml2-dev libzip-dev libleptonica-dev libtesseract-dev \
+    libmupdf-dev libfreetype-dev libharfbuzz-dev libmujs-dev libgumbo-dev \
+    libopenjp2-7-dev libjbig2dec0-dev libjpeg-dev zlib1g-dev
+WORKDIR /src
+COPY cmake/BuildPappl.cmake cmake/
+COPY pappl_spool.patch ./
+RUN cmake -DPREFIX=/opt/open-braille -DWORK=/tmp/pappl -P cmake/BuildPappl.cmake
+COPY src src/
+COPY firmware firmware/
+COPY demo/*.cpp demo/*.hpp demo/
+COPY CMakeLists.txt spanish-numbers.cti README.md LICENSE ./
+RUN cmake -S . -B build -DBUILD_TESTING=OFF -DBRAILLE_SERVICE=ON \
+    -DBRAILLE_PAPPL_ROOT=/opt/open-braille -DCMAKE_INSTALL_PREFIX=/opt/open-braille -DCMAKE_BUILD_TYPE=Release \
+    && cmake --build build -j2 && cmake --install build \
+    && install -Dm644 LICENSE /opt/open-braille/share/open-braille-embosser/LICENSE \
+    && install -Dm644 README.md /opt/open-braille/share/open-braille-embosser/README.md
+RUN ldd /opt/open-braille/bin/braille /opt/open-braille/bin/braille-service /opt/open-braille/bin/braille-printer \
+    | awk '/=> \// { print $3 }' | sort -u > /tmp/libraries \
+    && while IFS= read -r library; do \
+       case "$library" in /opt/open-braille/*) continue ;; esac; \
+       dpkg-query -S "$(readlink -f "$library")" || dpkg-query -S "$library"; \
+       done < /tmp/libraries | cut -d: -f1 | sort -u > /tmp/runtime-packages
+
+FROM debian:trixie-slim@sha256:62bd423aeee912639ca8ee681c2b762cb3e25137e0a92b20be455898a9f034ad
+COPY --from=build /tmp/runtime-packages /tmp/runtime-packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    $(cat /tmp/runtime-packages) liblouis-data tesseract-ocr-eng tesseract-ocr-spa tesseract-ocr-osd \
+    && rm -rf /var/lib/apt/lists/* /tmp/runtime-packages
+COPY --from=build /opt/open-braille/bin /opt/open-braille/bin
+COPY --from=build /opt/open-braille/lib /opt/open-braille/lib
+COPY --from=build /opt/open-braille/share /opt/open-braille/share
+ENV OMP_THREAD_LIMIT=1
+USER 1000:1000
+EXPOSE 8000 8631
+ENTRYPOINT ["/opt/open-braille/bin/braille-service"]
+CMD ["--state", "/data", "--bind", "0.0.0.0"]

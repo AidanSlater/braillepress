@@ -1,0 +1,54 @@
+# Build and test everything in a disposable image; only Docker is needed.
+#
+#   docker build --network host --progress plain -f Dockerfile.verify .
+#
+# The test stage builds the converter, service and Qt apps against the
+# patched PAPPL, then runs every CTest suite and the demo target. Build
+# arguments select the variant:
+#
+#   --build-arg BASE=ubuntu:24.04   Ubuntu 24.04 instead of Debian 13
+#   --build-arg SANITIZE=ON         AddressSanitizer and UndefinedBehaviorSanitizer
+#   --build-arg VERIFY_USER=UID:GID Tester IDs, defaulting to 1000:1000
+#
+# Docker skips the tests when nothing changed since a passing run; add
+# --no-cache-filter test to run them again. The deps stage alone is a
+# development image with every build dependency and PAPPL in /opt/pappl:
+#
+#   docker build --network host -f Dockerfile.verify --target deps -t open-braille-verify:trixie .
+ARG BASE=debian:trixie-slim@sha256:62bd423aeee912639ca8ee681c2b762cb3e25137e0a92b20be455898a9f034ad
+FROM ${BASE} AS deps
+ENV DEBIAN_FRONTEND=noninteractive TZ=UTC
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential cmake ninja-build pkg-config ca-certificates patch \
+    liblouis-dev liblouis-data libicu-dev libxml2-dev libzip-dev libleptonica-dev libtesseract-dev \
+    tesseract-ocr tesseract-ocr-eng tesseract-ocr-spa tesseract-ocr-osd \
+    libmupdf-dev libfreetype-dev libharfbuzz-dev libmujs-dev libgumbo-dev libopenjp2-7-dev libjbig2dec0-dev \
+    libjpeg-dev zlib1g-dev \
+    libavahi-client-dev libcups2-dev libgnutls28-dev libssl-dev libcpp-httplib-dev nlohmann-json3-dev \
+    qt6-base-dev qt6-connectivity-dev qt6-qpa-plugins \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /opt/setup
+COPY cmake/BuildPappl.cmake cmake/
+COPY pappl_spool.patch ./
+RUN cmake -DPREFIX=/opt/pappl -DWORK=/tmp/pappl -DJOBS=8 -P cmake/BuildPappl.cmake && rm -rf /tmp/pappl
+RUN chmod -R a+rX /opt
+
+FROM deps AS test
+ARG SANITIZE=OFF
+ARG VERIFY_USER=1000:1000
+ENV HOME=/tmp OMP_THREAD_LIMIT=1 ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=print_stacktrace=1
+USER ${VERIFY_USER}
+WORKDIR /tmp/open-braille-embosser
+COPY --chown=${VERIFY_USER} . .
+RUN case "$SANITIZE" in \
+        ON) flags="-fsanitize=address,undefined -fno-omit-frame-pointer -fno-sanitize-recover=undefined" \
+            link="-fsanitize=address,undefined" ;; \
+        OFF) flags="" link="" ;; \
+        *) echo "SANITIZE must be ON or OFF" >&2; exit 2 ;; \
+    esac \
+    && cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBRAILLE_SERVICE=ON -DBRAILLE_DESKTOP=ON -DBRAILLE_BENCH=ON \
+        -DBRAILLE_PAPPL_ROOT=/opt/pappl -DCMAKE_CXX_FLAGS="$flags" -DCMAKE_EXE_LINKER_FLAGS="$link" \
+    && cmake --build build \
+    && ctest --test-dir build --output-on-failure \
+    && cmake --build build --target demo \
+    && echo "All checks passed (base image $(. /etc/os-release && echo "$PRETTY_NAME"), SANITIZE=$SANITIZE)"

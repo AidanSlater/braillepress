@@ -1,0 +1,40 @@
+# Local directories and environment files.
+/.*/
+!/.github/
+!/.devcontainer/
+.env
+.env.*
+!.env.example
+
+# Build trees, packages, and compiled objects.
+/build/
+/dist/
+*.o
+*.a
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+
+# Generated output and local job/review state. Root-only file patterns keep
+# the intentional PDF and literal Braille fixtures in tests/fixtures/ visible.
+/output/
+/braille-jobs/
+/music-review/
+/jobs/
+/ipp-spool/
+/queue.state
+/queue.state.new
+/*.pdf
+/*.brl
+/*.pgm
+/imported*.txt
+*.log
+
+# Editor backups and operating-system metadata.
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db

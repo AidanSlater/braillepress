@@ -1,0 +1,13 @@
+--- a/pappl/job-ipp.c
++++ b/pappl/job-ipp.c
+@@ -112,6 +112,9 @@
+   // If we have a PWG or Apple raster file, process it directly or return
+   // server-error-busy...
+-  if (!strcmp(job->format, "image/pwg-raster") || !strcmp(job->format, "image/urf"))
++  // Open Braille needs the original raster file for OCR and review while held.
++  // Use the normal disk-spooling path for this driver, preserving the MIME type.
++  if (strcmp(job->printer->driver_data.format, "application/vnd.openbraille") &&
++      (!strcmp(job->format, "image/pwg-raster") || !strcmp(job->format, "image/urf")))
+   {
+     _papplRWLockRead(job->printer);
+ 

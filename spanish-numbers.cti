@@ -1,0 +1,24 @@
+# Keep decimal/grouping separators inside a Spanish number on older Liblouis.
+# These rules are also present in upstream tables/es-g1.ctb:
+# https://github.com/liblouis/liblouis/blob/master/tables/es-g1.ctb
+# ONCE B 2 (2026), sections 6.1 and 8.1: decimal comma, grouping point.
+include digits6Dots.uti
+numericmodechars .,
+
+# Signs the Spanish table lacks. Checked against CBE B 2 version 2 (2022) and the
+# Ibero-American unified mathematics code (CMU, 2nd ed., 2024), which replaces B 5;
+# confirm against B 2 version 4 when it is available. Ordinals (1.º, 2.ª) need
+# low-position digits and are written by ordinals() in src/braille.cpp before translation.
+sign \x00b0 356                       ° degree, directly after the number (B 2 §14.1; CMU §11.5)
+sign \x00a7 346                       § (B 2 §12.1)
+sign \x00b6 146                       ¶ (B 2 §12.1)
+sign \x00b7 5                         · Catalan punt volat, l·l (B 2 §5.1)
+sign \x2122 126-46-2345-46-134-345    ™ written as (TM) (B 2 §12)
+sign \x2032 1256                      ′ prime (B 2 §14.1; CMU §4.3.1)
+sign \x2033 1256-1256                 ″ double prime
+sign \x2264 246-2356                  ≤ (CMU §6.1)
+sign \x2265 135-2356                  ≥ (CMU §6.1)
+sign \x2260 45-2356                   ≠ (CMU §6.2)
+sign \x2248 5-2356-3                  ≈ (CMU §6.1)
+sign \x221e 3456-1256                 ∞ (CMU §7.4)
+sign \x221a 1246-156                  √ square root; the index is omitted (CMU §5.2.2)

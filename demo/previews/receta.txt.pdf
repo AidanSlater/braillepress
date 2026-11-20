@@ -1,0 +1,106 @@
+%PDF-1.3
+%‚„œ”
+1 0 obj
+<<
+/Producer (pypdf)
+>>
+endobj
+2 0 obj
+<<
+/Type /Pages
+/Count 1
+/Kids [ 4 0 R ]
+>>
+endobj
+3 0 obj
+<<
+/Type /Catalog
+/Pages 2 0 R
+>>
+endobj
+4 0 obj
+<<
+/Type /Page
+/Resources <<
+/Font <<
+/R 5 0 R
+/B 6 0 R
+/I 7 0 R
+/M 8 0 R
+>>
+>>
+/MediaBox [ 0.0 0.0 612 792 ]
+/Contents 9 0 R
+/Parent 2 0 R
+>>
+endobj
+5 0 obj
+<<
+/Type /Font
+/Subtype /Type1
+/BaseFont /Helvetica
+/Encoding /WinAnsiEncoding
+>>
+endobj
+6 0 obj
+<<
+/Type /Font
+/Subtype /Type1
+/BaseFont /Helvetica-Bold
+/Encoding /WinAnsiEncoding
+>>
+endobj
+7 0 obj
+<<
+/Type /Font
+/Subtype /Type1
+/BaseFont /Helvetica-Oblique
+/Encoding /WinAnsiEncoding
+>>
+endobj
+8 0 obj
+<<
+/Type /Font
+/Subtype /Type1
+/BaseFont /Courier
+/Encoding /WinAnsiEncoding
+>>
+endobj
+9 0 obj
+<<
+/Length 1261
+>>
+stream
+q 0.08 0.14 0.2 rg BT /B 21 Tf 1.00000 0.00000 -0.00000 1.00000 48.000 730.000 Tm <7265636574612e747874> Tj ET Q
+q 0.08 0.14 0.2 rg BT /R 14 Tf 1.00000 0.00000 -0.00000 1.00000 48.000 685.000 Tm <23205265636574612064652070616e> Tj ET Q
+q 0.08 0.14 0.2 rg BT /R 14 Tf 1.00000 0.00000 -0.00000 1.00000 48.000 664.000 Tm <> Tj ET Q
+q 0.08 0.14 0.2 rg BT /R 14 Tf 1.00000 0.00000 -0.00000 1.00000 48.000 643.000 Tm <50726563616c656e74617220656c20686f726e6f20612031383020b0432e20456c20312eba207061736f206573206d657a636c6172206c6120686172696e6120636f6e20656c20616775612e> Tj ET Q
+q 0.08 0.14 0.2 rg BT /R 14 Tf 1.00000 0.00000 -0.00000 1.00000 48.000 622.000 Tm <> Tj ET Q
+q 0.08 0.14 0.2 rg BT /R 14 Tf 1.00000 0.00000 -0.00000 1.00000 48.000 601.000 Tm <2d20353030206720646520686172696e61> Tj ET Q
+q 0.08 0.14 0.2 rg BT /R 14 Tf 1.00000 0.00000 -0.00000 1.00000 48.000 580.000 Tm <2d20333030206d6c2064652061677561> Tj ET Q
+q 0.08 0.14 0.2 rg BT /R 14 Tf 1.00000 0.00000 -0.00000 1.00000 48.000 559.000 Tm <2d20313020672064652073616c> Tj ET Q
+q 0.08 0.14 0.2 rg BT /R 14 Tf 1.00000 0.00000 -0.00000 1.00000 48.000 538.000 Tm <> Tj ET Q
+q 0.08 0.14 0.2 rg BT /R 14 Tf 1.00000 0.00000 -0.00000 1.00000 48.000 517.000 Tm <bf4c6973746f3f20a14120636f63696e617221> Tj ET Q
+endstream
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000015 00000 n 
+0000000054 00000 n 
+0000000113 00000 n 
+0000000162 00000 n 
+0000000320 00000 n 
+0000000417 00000 n 
+0000000519 00000 n 
+0000000624 00000 n 
+0000000719 00000 n 
+trailer
+<<
+/Size 10
+/Root 3 0 R
+/Info 1 0 R
+>>
+startxref
+2032
+%%EOF
